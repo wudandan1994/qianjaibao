@@ -48,12 +48,14 @@ export default {
            realName:"",
            idCard:"",
            accNo:"",
-           mobile:""
+           mobile:"",
+           chMerCode:""
         }
     },
     methods:{
        goBack(){
            this.$router.push("/home")
+                
        },
        pay(){
            let partten=/^1\d{10}$/
@@ -71,6 +73,15 @@ export default {
                 return
             }
 
+            var rand = "";
+                for(var i = 0; i < 2; i++){
+                    var r = Math.floor(Math.random() * 10);
+                    rand += r
+                }
+            let number= new Date().getTime()+rand
+           
+            console.log(time);
+            
 
             let data={
                 busCode:"2001",
@@ -79,9 +90,30 @@ export default {
                 idCard:this.idCard,
                 accNo:this.accNo,
                 mobile:this.mobile,
+                orderCode:number,
+                chMerCode:this.chMerCode,
+                orderTime,
             }
 
-       }
+       },
+    //    查询商户编号
+        search(){
+            axiosPost("http://pay.91dianji.com.cn/api/creditCard/getMemberReg")
+            .then(res=>{
+                console.log(res,"result");
+                if(!res.data.success){
+                    this.$toast({
+                        message:res.data.message
+                    })
+                    return
+                }
+                let chMerCode=res.data.data.chMerCode
+            })
+            .catch(err=>{
+                console.log(err,"error");
+                
+            })
+        }
         
     },
     created () {
@@ -89,7 +121,7 @@ export default {
     },
    
     mounted () {
-       
+       this.search()
     }
 }
 </script>
